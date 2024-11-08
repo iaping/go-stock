@@ -1,6 +1,7 @@
 package stock
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -62,5 +63,6 @@ func (c *Client) Do(reqopt Request, respopt Response) ([]byte, error) {
 		}
 	}
 
-	return resp.Body(), nil
+	body := resp.Body()
+	return bytes.Clone(body), nil
 }
