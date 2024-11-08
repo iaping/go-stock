@@ -63,6 +63,5 @@ func (c *Client) Do(reqopt Request, respopt Response) ([]byte, error) {
 		}
 	}
 
-	body := resp.Body()
-	return bytes.Clone(body), nil
+	return bytes.Clone(resp.Body()), nil
 }

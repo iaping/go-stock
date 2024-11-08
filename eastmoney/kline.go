@@ -12,26 +12,45 @@ import (
 // K线
 // https://quote.eastmoney.com/concept/sz000001.html
 
+type KlinePeriod int16
+
+const (
+	KlinePeriod5m    KlinePeriod = 5   // 5分
+	KlinePeriod15m   KlinePeriod = 15  // 15分
+	KlinePeriod30m   KlinePeriod = 30  // 30分
+	KlinePeriod60m   KlinePeriod = 60  // 60分
+	KlinePeriodDay   KlinePeriod = 101 // 日
+	KlinePeriodWeek  KlinePeriod = 102 // 周
+	KlinePeriodMonth KlinePeriod = 103 // 月
+)
+
 type Kline struct {
-	c     *Eastmoney
-	url   string
-	pz    int
-	secid string
-	end   string
+	c      *Eastmoney
+	url    string
+	pz     int
+	secid  string
+	end    string
+	period KlinePeriod
 }
 
 func NewKline(c *Eastmoney) *Kline {
 	return &Kline{
-		c:   c,
-		url: "https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=%s&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&klt=101&fqt=1&end=%s&lmt=%d",
-		pz:  210,
-		end: time.Now().Format("20060102"),
+		c:      c,
+		url:    "https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=%s&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&klt=%d&fqt=1&end=%s&lmt=%d",
+		pz:     210,
+		end:    time.Now().Format("20060102"),
+		period: KlinePeriodDay,
 	}
 }
 
 // 0.000001
 func (k *Kline) SetSecid(i string) *Kline {
 	k.secid = i
+	return k
+}
+
+func (k *Kline) SetPeriod(i KlinePeriod) *Kline {
+	k.period = i
 	return k
 }
 
@@ -44,7 +63,7 @@ func (k *Kline) SetSize(i int) *Kline {
 func (k *Kline) Do() (*KlineResponse, error) {
 	opt := func(req *fasthttp.Request) error {
 		req.Header.SetMethod(fasthttp.MethodGet)
-		url := fmt.Sprintf(k.url, k.secid, k.end, k.pz)
+		url := fmt.Sprintf(k.url, k.secid, k.period, k.end, k.pz)
 		req.SetRequestURI(url)
 		return nil
 	}
@@ -61,6 +80,8 @@ func (k *Kline) Do() (*KlineResponse, error) {
 		if err = resp.Data.format(); err != nil {
 			return nil, err
 		}
+
+		resp.Data.Period = k.period
 	}
 
 	return resp.Data, nil
@@ -73,6 +94,7 @@ type KlineResponse struct {
 	Decimal   int8         `json:"decimal"`
 	Dktotal   int          `json:"dktotal"`
 	PreKPrice float64      `json:"preKPrice"`
+	Period    KlinePeriod  `json:"period"`
 	Items     []*KlineItem `json:"items"`
 	Klines    []string     `json:"klines"`
 }
