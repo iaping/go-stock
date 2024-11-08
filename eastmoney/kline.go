@@ -57,7 +57,11 @@ func (k *Kline) Do() (*KlineResponse, error) {
 		return nil, err
 	}
 
-	return resp.Data, resp.Data.format()
+	if err = resp.Data.format(); err != nil {
+		return nil, err
+	}
+
+	return resp.Data, nil
 }
 
 type KlineResponse struct {
