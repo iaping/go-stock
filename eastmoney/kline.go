@@ -15,6 +15,7 @@ import (
 type KlinePeriod int16
 
 const (
+	KlinePeriod1m    KlinePeriod = 1   // 1分
 	KlinePeriod5m    KlinePeriod = 5   // 5分
 	KlinePeriod15m   KlinePeriod = 15  // 15分
 	KlinePeriod30m   KlinePeriod = 30  // 30分
