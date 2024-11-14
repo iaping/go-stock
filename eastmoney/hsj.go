@@ -20,7 +20,7 @@ type Hsj struct {
 func NewHsj(c *Eastmoney) *Hsj {
 	return &Hsj{
 		c:   c,
-		url: "https://1.push2.eastmoney.com/api/qt/clist/get?cb=&pn=%d&pz=%d&po=0&np=1&fltt=2&invt=2&dect=1&wbp2u=|0|0|0|web&fid=f12&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f13,f14&_=%d",
+		url: "https://1.push2.eastmoney.com/api/qt/clist/get?cb=&pn=%d&pz=%d&po=0&np=1&fltt=2&invt=2&dect=1&wbp2u=|0|0|0|web&fid=f12&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f13,f14,f100,f102,f103&_=%d",
 		pn:  1,
 		pz:  20,
 	}
@@ -56,8 +56,11 @@ func (hsj *Hsj) Do() (*HsjResponse, error) {
 type HsjResponse struct {
 	Total int `json:"total"`
 	Data  []struct {
-		Name   string `json:"f14"`
-		Code   string `json:"f12"`
-		Market int8   `json:"f13"`
+		Name     string `json:"f14"`  // 名称
+		Code     string `json:"f12"`  // 代码
+		Market   int8   `json:"f13"`  // 市场
+		Industry string `json:"f100"` // 行业
+		Zone     string `json:"f102"` // 地域
+		Concept  string `json:"f103"` // 概念
 	} `json:"diff"`
 }
