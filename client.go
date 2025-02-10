@@ -13,11 +13,11 @@ type Request func(*fasthttp.Request) error
 type Response func(*fasthttp.Response) error
 
 type Client struct {
-	c *fasthttp.Client
+	client *fasthttp.Client
 }
 
-func New(c *fasthttp.Client) *Client {
-	return &Client{c: c}
+func New(client *fasthttp.Client) *Client {
+	return &Client{client: client}
 }
 
 func Default() *Client {
@@ -51,7 +51,7 @@ func (c *Client) Do(reqopt Request, respopt Response) ([]byte, error) {
 		return nil, err
 	}
 
-	if err = c.c.Do(req, resp); err != nil {
+	if err = c.client.Do(req, resp); err != nil {
 		return nil, err
 	}
 	if code := resp.StatusCode(); code != fasthttp.StatusOK {

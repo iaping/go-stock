@@ -26,19 +26,19 @@ const (
 )
 
 type Kline struct {
-	c      *Eastmoney
+	client *Eastmoney
 	url    string
-	pz     int
+	size   int
 	secid  string
 	end    string
 	period KlinePeriod
 }
 
-func NewKline(c *Eastmoney) *Kline {
+func NewKline(client *Eastmoney) *Kline {
 	return &Kline{
-		c:      c,
+		client: client,
 		url:    "https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=%s&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&klt=%d&fqt=1&end=%s&lmt=%d",
-		pz:     210,
+		size:   210,
 		end:    time.Now().Format("20060102"),
 		period: KlinePeriodDay,
 	}
@@ -57,14 +57,14 @@ func (k *Kline) SetPeriod(i KlinePeriod) *Kline {
 
 // 数量
 func (k *Kline) SetSize(i int) *Kline {
-	k.pz = i
+	k.size = i
 	return k
 }
 
 func (k *Kline) Do() (*KlineResponse, error) {
 	opt := func(req *fasthttp.Request) error {
 		req.Header.SetMethod(fasthttp.MethodGet)
-		url := fmt.Sprintf(k.url, k.secid, k.period, k.end, k.pz)
+		url := fmt.Sprintf(k.url, k.secid, k.period, k.end, k.size)
 		req.SetRequestURI(url)
 		return nil
 	}
@@ -72,7 +72,7 @@ func (k *Kline) Do() (*KlineResponse, error) {
 	var resp struct {
 		Data *KlineResponse `json:"data"`
 	}
-	err := k.c.json(opt, &resp)
+	err := k.client.json(opt, &resp)
 	if err != nil {
 		return nil, err
 	}

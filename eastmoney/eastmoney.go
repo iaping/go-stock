@@ -3,12 +3,12 @@ package eastmoney
 import "github.com/iaping/go-stock"
 
 type Eastmoney struct {
-	c *stock.Client
+	client *stock.Client
 }
 
-func New(c *stock.Client) *Eastmoney {
+func New(client *stock.Client) *Eastmoney {
 	return &Eastmoney{
-		c: c,
+		client: client,
 	}
 }
 
@@ -17,7 +17,7 @@ func Default() *Eastmoney {
 }
 
 func (e *Eastmoney) json(reqopt stock.Request, v interface{}) error {
-	return e.c.Json(reqopt, nil, v)
+	return e.client.Json(reqopt, nil, v)
 }
 
 func (e *Eastmoney) Hsj() *Hsj {

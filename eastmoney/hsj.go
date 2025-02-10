@@ -11,37 +11,37 @@ import (
 // https://quote.eastmoney.com/center/gridlist.html#hs_a_board
 
 type Hsj struct {
-	c   *Eastmoney
-	url string
-	pn  int
-	pz  int
+	client *Eastmoney
+	url    string
+	page   int
+	size   int
 }
 
-func NewHsj(c *Eastmoney) *Hsj {
+func NewHsj(client *Eastmoney) *Hsj {
 	return &Hsj{
-		c:   c,
-		url: "https://1.push2.eastmoney.com/api/qt/clist/get?cb=&pn=%d&pz=%d&po=0&np=1&fltt=2&invt=2&dect=1&wbp2u=|0|0|0|web&fid=f12&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f13,f14,f100,f102,f103&_=%d",
-		pn:  1,
-		pz:  20,
+		client: client,
+		url:    "https://1.push2.eastmoney.com/api/qt/clist/get?cb=&pn=%d&pz=%d&po=0&np=1&fltt=2&invt=2&dect=1&wbp2u=|0|0|0|web&fid=f12&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048&fields=f12,f13,f14,f100,f102,f103&_=%d",
+		page:   1,
+		size:   20,
 	}
 }
 
 // 页码
 func (hsj *Hsj) SetPage(i int) *Hsj {
-	hsj.pn = i
+	hsj.page = i
 	return hsj
 }
 
 // 数量
 func (hsj *Hsj) SetSize(i int) *Hsj {
-	hsj.pz = i
+	hsj.size = i
 	return hsj
 }
 
 func (hsj *Hsj) Do() (*HsjResponse, error) {
 	opt := func(req *fasthttp.Request) error {
 		req.Header.SetMethod(fasthttp.MethodGet)
-		url := fmt.Sprintf(hsj.url, hsj.pn, hsj.pz, time.Now().UnixMicro())
+		url := fmt.Sprintf(hsj.url, hsj.page, hsj.size, time.Now().UnixMicro())
 		req.SetRequestURI(url)
 		return nil
 	}
@@ -49,7 +49,7 @@ func (hsj *Hsj) Do() (*HsjResponse, error) {
 	var resp struct {
 		Data *HsjResponse `json:"data"`
 	}
-	err := hsj.c.json(opt, &resp)
+	err := hsj.client.json(opt, &resp)
 	return resp.Data, err
 }
 
